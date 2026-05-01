@@ -1,12 +1,19 @@
 import { db } from "../db/index.js";
 
-const insertAuditStmt = db.prepare(`
-  INSERT INTO audit_log (action, device_id, performed_by, detail)
-  VALUES (@action, @device_id, @performed_by, @detail)
-`);
+let insertAuditStmt = null;
+
+function getInsertAuditStmt() {
+  if (!insertAuditStmt) {
+    insertAuditStmt = db.prepare(`
+      INSERT INTO audit_log (action, device_id, performed_by, detail)
+      VALUES (@action, @device_id, @performed_by, @detail)
+    `);
+  }
+  return insertAuditStmt;
+}
 
 export function writeAudit({ action, deviceId = null, performedBy, detail = null }) {
-  insertAuditStmt.run({
+  getInsertAuditStmt().run({
     action,
     device_id: deviceId,
     performed_by: performedBy,
