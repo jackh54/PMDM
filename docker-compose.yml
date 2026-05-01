@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   nanomdm:
     image: ghcr.io/micromdm/nanomdm:latest
@@ -24,7 +22,8 @@ services:
       retries: 5
 
   scep:
-    image: ghcr.io/micromdm/scep:latest
+    build:
+      context: ./scep
     restart: unless-stopped
     ports:
       - "2016:2016"
