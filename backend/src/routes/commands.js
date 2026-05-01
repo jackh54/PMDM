@@ -6,10 +6,17 @@ import { toAppleRequestType } from "../providers/macos/commands.js";
 import { canRunCommand } from "../services/capabilities.js";
 import { writeAudit } from "../services/audit.js";
 import { triggerPushForDevice } from "../services/apns.js";
+import { config } from "../config.js";
 
 const router = Router();
 
 async function dispatch(req, res, commandType) {
+  if (commandType === "wipe" && !config.ALLOW_DEVICE_WIPE) {
+    return res.status(403).json({
+      error: "Device wipe is disabled. Set ALLOW_DEVICE_WIPE=true in environment to enable."
+    });
+  }
+
   const deviceId = req.body?.device_id;
   if (!deviceId) {
     return res.status(400).json({ error: "device_id is required" });

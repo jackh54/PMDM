@@ -8,6 +8,13 @@ import { getDevice, useApi } from "@/components/data-hooks";
 export default function DeviceDetailPage() {
   const { id } = useParams();
   const { data: device, loading, error } = useApi(() => getDevice(id), [id]);
+  const { data: settingsData } = useApi(
+    async () => {
+      const { data } = await api.get("/settings/status");
+      return data;
+    },
+    []
+  );
   const { data: historyData, setData: setHistory } = useApi(
     async () => {
       const { data } = await api.get(`/commands/${id}`);
@@ -16,6 +23,7 @@ export default function DeviceDetailPage() {
     [id]
   );
   const history = Array.isArray(historyData) ? historyData : [];
+  const allowWipe = Boolean(settingsData?.safety?.allow_device_wipe);
 
   async function runAction(kind) {
     await api.post(`/commands/${kind}`, { device_id: id });
@@ -41,10 +49,17 @@ export default function DeviceDetailPage() {
               <button className="btn" type="button" onClick={() => runAction("restart")}>
                 Restart
               </button>
-              <button className="btn danger" type="button" onClick={() => runAction("wipe")}>
-                Wipe
-              </button>
+              {allowWipe ? (
+                <button className="btn danger" type="button" onClick={() => runAction("wipe")}>
+                  Wipe
+                </button>
+              ) : null}
             </div>
+            {!allowWipe ? (
+              <div className="subtle" style={{ marginTop: 10 }}>
+                Wipe is disabled by safety policy. Set `ALLOW_DEVICE_WIPE=true` in environment to enable.
+              </div>
+            ) : null}
           </div>
           <div className="card">
             <h3>Installed Profiles</h3>

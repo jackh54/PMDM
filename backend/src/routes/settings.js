@@ -12,7 +12,7 @@ router.get("/status", (_req, res) => {
   } catch {
     apns = { configured: false, expires_at: null };
   }
-  res.json({ apns });
+  res.json({ apns, safety: { allow_device_wipe: config.ALLOW_DEVICE_WIPE } });
 });
 
 export default router;
