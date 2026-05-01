@@ -10,3 +10,4 @@ scep/depot/
 certs/
 backend/data/
 frontend/dist/
+frontend/.next/
