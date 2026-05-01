@@ -43,7 +43,8 @@ function makeMdmPayload(identityCertificateUuid) {
     Topic: config.APNS_TOPIC,
     IdentityCertificateUUID: identityCertificateUuid,
     SignMessage: true,
-    AccessRights: 8191
+    AccessRights: 8191,
+    ServerCapabilities: ["com.apple.mdm.per-user-connections"]
   };
 }
 
