@@ -40,6 +40,11 @@ export default function EnrollmentPage() {
               <input readOnly value={`https://${domain}/mdm/server`} />
             </div>
           </div>
+          <div style={{ marginTop: 12 }}>
+            <a className="btn primary" href={`https://${domain}/enrollment.mobileconfig`}>
+              Download Enrollment Profile
+            </a>
+          </div>
         </div>
         <div className="card">
           <h3>Manual Enrollment Steps (Mac)</h3>

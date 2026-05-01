@@ -14,8 +14,11 @@ import commandsRoutes from "./routes/commands.js";
 import groupsRoutes from "./routes/groups.js";
 import webhookRoutes from "./routes/webhook.js";
 import settingsRoutes from "./routes/settings.js";
+import enrollmentRoutes from "./routes/enrollment.js";
+import { writeEnrollmentProfile } from "./services/enrollment.js";
 
 runMigrations();
+writeEnrollmentProfile();
 
 const app = express();
 app.use(helmet());
@@ -31,11 +34,15 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/webhook", webhookRoutes);
+app.use("/api/enrollment", enrollmentRoutes);
 app.use("/api/devices", requireAuth, devicesRoutes);
 app.use("/api/profiles", requireAuth, profilesRoutes);
 app.use("/api/commands", requireAuth, commandsRoutes);
 app.use("/api/groups", requireAuth, groupsRoutes);
 app.use("/api/settings", requireAuth, settingsRoutes);
+app.get("/enrollment.mobileconfig", (_req, res) => {
+  res.redirect("/api/enrollment/mobileconfig");
+});
 
 app.use((error, _req, res, _next) => {
   // eslint-disable-next-line no-console

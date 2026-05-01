@@ -52,10 +52,15 @@ services:
       NANOMDM_URL: http://nanomdm:9000
       NANOMDM_API_KEY: ${NANOMDM_API_KEY}
       DOMAIN: ${DOMAIN}
+      APNS_TOPIC: ${APNS_TOPIC}
+      SCEP_URL: ${SCEP_URL}
+      SCEP_CHALLENGE: ${SCEP_CHALLENGE}
+      ENROLLMENT_PROFILE_PATH: /app/nanomdm/enrollment/enrollment.mobileconfig
     volumes:
       - ./data:/app/data
       - ./certs/apns:/app/certs/apns:ro
       - ./certs/profile-signing:/app/certs/profile-signing:ro
+      - ./nanomdm/enrollment:/app/nanomdm/enrollment
     depends_on:
       nanomdm:
         condition: service_started
