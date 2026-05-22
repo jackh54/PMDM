@@ -1,10 +1,10 @@
 "use client";
 
 import AppShell from "@/components/app-shell";
-import { getSettings, useApi } from "@/components/data-hooks";
+import { getEnrollmentStatus, useApi } from "@/components/data-hooks";
 
 export default function EnrollmentPage() {
-  const { data, loading } = useApi(getSettings, []);
+  const { data, loading, error } = useApi(getEnrollmentStatus, []);
 
   const domain = data?.domain ?? "…";
   const enrollmentUrl = data?.urls?.enrollment ?? `https://${domain}/enrollment.mobileconfig`;
@@ -17,9 +17,16 @@ export default function EnrollmentPage() {
   return (
     <AppShell title="Enrollment Ops">
       <div className="stack">
+        {error ? (
+          <div className="card">
+            Could not load server status: {error}. Rebuild backend:{" "}
+            <code>docker compose up -d --build backend frontend</code>
+          </div>
+        ) : null}
         <div className="card">
           <h3>Readiness Checklist</h3>
           {loading ? <p className="subtle">Loading server config…</p> : null}
+          {data?.apns?.hint ? <p className="subtle">{data.apns.hint}</p> : null}
           <ul>
             <li>
               Public DNS points <strong>{domain}</strong> to your VPS.

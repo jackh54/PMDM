@@ -55,3 +55,8 @@ export async function getSettings() {
   const { data } = await api.get("/settings/status");
   return data;
 }
+
+export async function getEnrollmentStatus() {
+  const { data } = await api.get("/enrollment/status");
+  return data;
+}

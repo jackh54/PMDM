@@ -1,8 +1,13 @@
 import { Router } from "express";
 import { readEnrollmentProfile, writeEnrollmentProfile } from "../services/enrollment.js";
+import { buildReadinessStatus } from "../services/readiness.js";
 import { writeAudit } from "../services/audit.js";
 
 const router = Router();
+
+router.get("/status", async (_req, res) => {
+  res.json(await buildReadinessStatus());
+});
 
 router.get("/mobileconfig", (_req, res) => {
   const bytes = readEnrollmentProfile();

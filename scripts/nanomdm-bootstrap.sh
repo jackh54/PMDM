@@ -76,5 +76,13 @@ echo
 echo "NanoMDM version:"
 curl -fsS "${NANOMDM_URL}/version" || true
 echo
+if [[ -f "$APNS_KEY" ]]; then
+  chmod 644 "$APNS_CERT" "$APNS_KEY" 2>/dev/null || true
+  if command -v chown >/dev/null 2>&1; then
+    chown 1000:1000 "$APNS_CERT" "$APNS_KEY" 2>/dev/null || true
+  fi
+  echo "Adjusted APNS cert permissions for backend container (uid 1000)."
+fi
+
 echo "Done. Restart backend to regenerate enrollment.mobileconfig if DOMAIN/APNS_TOPIC changed:"
 echo "  docker compose restart backend"
