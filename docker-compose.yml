@@ -59,6 +59,8 @@ services:
       APNS_TOPIC: ${APNS_TOPIC}
       SCEP_URL: ${SCEP_URL}
       SCEP_CHALLENGE: ${SCEP_CHALLENGE}
+      NANOMDM_WEBHOOK_URL: ${NANOMDM_WEBHOOK_URL:-http://backend:3001/api/webhook}
+      APNS_KEY_PATH: /app/certs/apns/apns.key
       ENROLLMENT_PROFILE_PATH: /app/nanomdm/enrollment/enrollment.mobileconfig
     volumes:
       - ./data:/app/data

@@ -16,6 +16,8 @@ const envSchema = z.object({
   SCEP_URL: z.string().url().optional(),
   SCEP_CHALLENGE: z.string().optional(),
   APNS_CERT_PATH: z.string().default("/app/certs/apns/apns.pem"),
+  APNS_KEY_PATH: z.string().default("/app/certs/apns/apns.key"),
+  NANOMDM_WEBHOOK_URL: z.string().url().optional(),
   ALLOW_DEVICE_WIPE: z
     .string()
     .optional()

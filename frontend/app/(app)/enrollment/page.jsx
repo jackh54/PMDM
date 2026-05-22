@@ -4,25 +4,51 @@ import AppShell from "@/components/app-shell";
 import { getSettings, useApi } from "@/components/data-hooks";
 
 export default function EnrollmentPage() {
-  const { data } = useApi(getSettings, []);
-  const domain = process.env.NEXT_PUBLIC_MDM_DOMAIN || "mdm.example.com";
+  const { data, loading } = useApi(getSettings, []);
+
+  const domain = data?.domain ?? "…";
+  const enrollmentUrl = data?.urls?.enrollment ?? `https://${domain}/enrollment.mobileconfig`;
+  const mdmUrl = data?.urls?.mdm ?? `https://${domain}/mdm`;
+  const webhookUrl = data?.urls?.webhook ?? `https://${domain}/api/webhook`;
+
+  const apnsReady = Boolean(data?.apns?.nanomdm_loaded);
+  const apnsFiles = Boolean(data?.apns?.files_present);
 
   return (
     <AppShell title="Enrollment Ops">
       <div className="stack">
         <div className="card">
           <h3>Readiness Checklist</h3>
+          {loading ? <p className="subtle">Loading server config…</p> : null}
           <ul>
-            <li>Public DNS points {domain} to your VPS.</li>
+            <li>
+              Public DNS points <strong>{domain}</strong> to your VPS.
+            </li>
             <li>Valid TLS is active and trusted by macOS clients.</li>
             <li>
-              APNS certificate status:{" "}
-              <span className={`status-pill ${data?.apns?.configured ? "active" : "warn"}`}>
-                {data?.apns?.configured ? "Configured" : "Not configured"}
+              APNS cert files on disk:{" "}
+              <span className={`status-pill ${apnsFiles ? "active" : "warn"}`}>
+                {apnsFiles ? "Present" : "Missing"}
               </span>
             </li>
-            <li>`/mdm` route proxies to NanoMDM; `NANOMDM_WEBHOOK_URL` must point to `/api/webhook`.</li>
-            <li>After enroll: assign profiles from Profiles or Device detail to push restrictions/policies.</li>
+            <li>
+              APNS loaded in NanoMDM:{" "}
+              <span className={`status-pill ${apnsReady ? "active" : "warn"}`}>
+                {apnsReady ? "Ready" : "Run ./scripts/nanomdm-bootstrap.sh"}
+              </span>
+              {data?.apns?.topic ? (
+                <span className="subtle" style={{ display: "block", marginTop: 4 }}>
+                  Topic: {data.apns.topic}
+                </span>
+              ) : null}
+            </li>
+            <li>
+              Webhook URL: <code>{webhookUrl}</code>
+            </li>
+            <li>
+              <code>/mdm</code> must proxy to NanoMDM at <code>{mdmUrl}</code>
+            </li>
+            <li>After enroll: assign profiles from Profiles or Device detail to push policies.</li>
           </ul>
         </div>
         <div className="card">
@@ -30,15 +56,19 @@ export default function EnrollmentPage() {
           <div className="form-grid">
             <div>
               <label>Profile URL</label>
-              <input readOnly value={`https://${domain}/enrollment.mobileconfig`} />
+              <input readOnly value={enrollmentUrl} />
             </div>
             <div>
               <label>MDM Server URL</label>
-              <input readOnly value={`https://${domain}/mdm`} />
+              <input readOnly value={mdmUrl} />
+            </div>
+            <div>
+              <label>SCEP URL</label>
+              <input readOnly value={data?.urls?.scep ?? ""} />
             </div>
           </div>
           <div style={{ marginTop: 12 }}>
-            <a className="btn primary" href={`https://${domain}/enrollment.mobileconfig`}>
+            <a className="btn primary" href={enrollmentUrl}>
               Download Enrollment Profile
             </a>
           </div>
@@ -46,10 +76,10 @@ export default function EnrollmentPage() {
         <div className="card">
           <h3>Manual Enrollment Steps (Mac)</h3>
           <ol>
-            <li>Download `enrollment.mobileconfig` from the profile URL.</li>
-            <li>Install profile on the target Mac with local admin approval.</li>
-            <li>Approve MDM enrollment prompt and trust profile.</li>
-            <li>Verify device appears in Devices list with status `active`.</li>
+            <li>Download the enrollment profile from the link above.</li>
+            <li>Install it on the Mac (System Settings → Profiles).</li>
+            <li>Approve the MDM enrollment prompt.</li>
+            <li>Confirm the device appears under Devices with status active.</li>
           </ol>
         </div>
       </div>

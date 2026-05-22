@@ -39,3 +39,10 @@ export async function getDevice(udid) {
   const { data } = await client.get(`/v1/devices/${encodeURIComponent(udid)}`);
   return data;
 }
+
+export async function getPushCertForTopic(topic) {
+  const { data } = await client.get("/v1/pushcert", {
+    params: { topic }
+  });
+  return data;
+}
