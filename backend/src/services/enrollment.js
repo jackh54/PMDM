@@ -38,13 +38,17 @@ function makeMdmPayload(identityCertificateUuid) {
     PayloadIdentifier: "com.pmdm.mdm.enrollment",
     PayloadUUID: uuid(),
     PayloadDisplayName: "PMDM MDM",
-    CheckInURL: `https://${config.DOMAIN}/mdm/checkin`,
-    ServerURL: `https://${config.DOMAIN}/mdm/server`,
+    ServerURL: `https://${config.DOMAIN}/mdm`,
     Topic: config.APNS_TOPIC,
     IdentityCertificateUUID: identityCertificateUuid,
     SignMessage: true,
+    CheckOutWhenRemoved: true,
     AccessRights: 8191,
-    ServerCapabilities: ["com.apple.mdm.per-user-connections"]
+    ServerCapabilities: [
+      "com.apple.mdm.per-user-connections",
+      "com.apple.mdm.bootstraptoken",
+      "com.apple.mdm.token"
+    ]
   };
 }
 

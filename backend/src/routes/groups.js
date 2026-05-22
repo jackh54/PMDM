@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db } from "../db/index.js";
 import { writeAudit } from "../services/audit.js";
+import { installGroupProfilesOnDevice } from "../services/profile-delivery.js";
 
 const router = Router();
 
@@ -35,13 +36,21 @@ router.post("/:id/devices", (req, res) => {
   if (result.changes === 0) {
     return res.status(404).json({ error: "Device not found" });
   }
+  const groupId = Number(req.params.id);
+  let profileDeliveries = [];
+  try {
+    profileDeliveries = await installGroupProfilesOnDevice(deviceId, groupId);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
   writeAudit({
     action: "group.add_device",
     deviceId,
     performedBy: req.user.sub,
-    detail: { groupId: Number(req.params.id) }
+    detail: { groupId, profileDeliveries }
   });
-  return res.status(200).json({ ok: true });
+  return res.status(202).json({ ok: true, profileDeliveries });
 });
 
 export default router;

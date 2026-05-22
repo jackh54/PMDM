@@ -171,6 +171,13 @@ label {
   gap: 12px;
 }
 
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
 .stack {
   display: grid;
   gap: 12px;

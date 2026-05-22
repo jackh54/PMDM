@@ -7,13 +7,17 @@ services:
     volumes:
       - ./nanomdm/db:/db
       - ./certs/apns:/certs/apns:ro
+      - ./scep/depot:/scep-ca:ro
     environment:
       NANOMDM_API_KEY: ${NANOMDM_API_KEY}
       NANOMDM_DEBUG: "true"
+      NANOMDM_WEBHOOK_URL: ${NANOMDM_WEBHOOK_URL:-http://backend:3001/api/webhook}
     command: >
       -storage file
       -storage-path /db
       -api ${NANOMDM_API_KEY}
+      -ca /scep-ca/ca.pem
+      -webhook-url ${NANOMDM_WEBHOOK_URL:-http://backend:3001/api/webhook}
       -debug
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:9000/v1/health"]

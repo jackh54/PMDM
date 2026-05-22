@@ -24,14 +24,25 @@ router.get("/:id", (req, res) => {
 
   const profiles = db
     .prepare(
-      `SELECT p.id, p.name, p.description, p.created_at, dp.installed_at
+      `SELECT p.id, p.name, p.description, p.profile_type, p.payload_identifier,
+              dp.status, dp.installed_at, dp.command_uuid
        FROM device_profiles dp
        JOIN profiles p ON p.id = dp.profile_id
        WHERE dp.device_id = ?`
     )
     .all(req.params.id);
 
-  return res.json({ ...device, profiles });
+  const inventory = db
+    .prepare("SELECT payload_json, updated_at FROM device_inventory WHERE device_id = ?")
+    .get(req.params.id);
+
+  return res.json({
+    ...device,
+    profiles,
+    inventory: inventory
+      ? { ...JSON.parse(inventory.payload_json), updated_at: inventory.updated_at }
+      : null
+  });
 });
 
 router.delete("/:id", (req, res) => {

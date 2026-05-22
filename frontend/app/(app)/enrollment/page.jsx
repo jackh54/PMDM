@@ -21,7 +21,8 @@ export default function EnrollmentPage() {
                 {data?.apns?.configured ? "Configured" : "Not configured"}
               </span>
             </li>
-            <li>`/mdm/checkin` and `/mdm/server` routes proxy to NanoMDM.</li>
+            <li>`/mdm` route proxies to NanoMDM; `NANOMDM_WEBHOOK_URL` must point to `/api/webhook`.</li>
+            <li>After enroll: assign profiles from Profiles or Device detail to push restrictions/policies.</li>
           </ul>
         </div>
         <div className="card">
@@ -32,12 +33,8 @@ export default function EnrollmentPage() {
               <input readOnly value={`https://${domain}/enrollment.mobileconfig`} />
             </div>
             <div>
-              <label>CheckIn URL</label>
-              <input readOnly value={`https://${domain}/mdm/checkin`} />
-            </div>
-            <div>
-              <label>Server URL</label>
-              <input readOnly value={`https://${domain}/mdm/server`} />
+              <label>MDM Server URL</label>
+              <input readOnly value={`https://${domain}/mdm`} />
             </div>
           </div>
           <div style={{ marginTop: 12 }}>

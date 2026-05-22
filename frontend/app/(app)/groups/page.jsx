@@ -10,6 +10,9 @@ export default function GroupsPage() {
   const groups = Array.isArray(data) ? data : [];
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [deviceId, setDeviceId] = useState("");
+  const [groupId, setGroupId] = useState("");
+  const [message, setMessage] = useState("");
 
   async function createGroup(event) {
     event.preventDefault();
@@ -18,6 +21,14 @@ export default function GroupsPage() {
     setData(data);
     setName("");
     setDescription("");
+  }
+
+  async function addDeviceToGroup(event) {
+    event.preventDefault();
+    setMessage("");
+    const { data } = await api.post(`/groups/${groupId}/devices`, { device_id: deviceId });
+    setMessage(`Device added. Profiles pushed: ${data.profileDeliveries?.length ?? 0}`);
+    setDeviceId("");
   }
 
   return (
@@ -30,11 +41,26 @@ export default function GroupsPage() {
             {loading ? <li>Loading...</li> : null}
             {groups.map((group) => (
               <li key={group.id}>
-                <strong>{group.name}</strong> - {group.description || "No description"}
+                <strong>{group.name}</strong> (id {group.id}) — {group.description || "No description"}
               </li>
             ))}
           </ul>
+          {message ? <p className="subtle">{message}</p> : null}
         </div>
+        <form className="card form-grid" onSubmit={addDeviceToGroup}>
+          <h3>Add device to group</h3>
+          <div>
+            <label>Group ID</label>
+            <input value={groupId} required onChange={(e) => setGroupId(e.target.value)} />
+          </div>
+          <div>
+            <label>Device UDID</label>
+            <input value={deviceId} required onChange={(e) => setDeviceId(e.target.value)} />
+          </div>
+          <button className="btn primary" type="submit">
+            Add device & push group profiles
+          </button>
+        </form>
         <form className="card form-grid" onSubmit={createGroup}>
           <h3>Create Group</h3>
           <div>
