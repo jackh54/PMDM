@@ -17,7 +17,7 @@ Self-hosted macOS-first MDM platform (macOS 10.13+) with NanoMDM, SCEP, Node.js 
 docker compose up -d --build nanomdm scep backend frontend
 ```
 
-**NanoMDM v0.9+** uses `-storage-dsn` (not the removed `-storage-path` flag). If NanoMDM logs `flag provided but not defined: -storage-path`, pull the latest `docker-compose.yml` and recreate the container.
+**NanoMDM v0.9+** uses `-storage filekv -storage-dsn /db` (the old `file` backend is disabled unless you pass `-storage-options enable_deprecated=1`). If logs say `file backend is deprecated; specify storage options to force enable`, pull latest `docker-compose.yml` and recreate nanomdm.
 
 ## Backups
 

@@ -13,7 +13,7 @@ services:
       NANOMDM_DEBUG: "true"
       NANOMDM_WEBHOOK_URL: ${NANOMDM_WEBHOOK_URL:-http://backend:3001/api/webhook}
     command: >
-      -storage file
+      -storage filekv
       -storage-dsn /db
       -api ${NANOMDM_API_KEY}
       -ca /scep-ca/ca.pem
