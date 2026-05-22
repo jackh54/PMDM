@@ -18,7 +18,12 @@ import enrollmentRoutes from "./routes/enrollment.js";
 import { writeEnrollmentProfile } from "./services/enrollment.js";
 
 runMigrations();
-writeEnrollmentProfile();
+try {
+  writeEnrollmentProfile();
+} catch (error) {
+  // eslint-disable-next-line no-console
+  console.error("Failed to write enrollment profile at startup:", error.message);
+}
 
 const app = express();
 app.use(helmet());

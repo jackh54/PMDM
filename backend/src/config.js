@@ -12,7 +12,7 @@ const envSchema = z.object({
   NANOMDM_API_KEY: z.string().min(16),
   DOMAIN: z.string().min(1),
   APNS_TOPIC: z.string().min(1),
-  ENROLLMENT_PROFILE_PATH: z.string().default("/app/nanomdm/enrollment/enrollment.mobileconfig"),
+  ENROLLMENT_PROFILE_PATH: z.string().default("/app/data/enrollment.mobileconfig"),
   SCEP_URL: z.string().url().optional(),
   SCEP_CHALLENGE: z.string().optional(),
   APNS_CERT_PATH: z.string().default("/app/certs/apns/apns.pem"),
