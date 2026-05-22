@@ -24,7 +24,7 @@ router.post("/", (req, res) => {
   return res.status(201).json({ id: result.lastInsertRowid });
 });
 
-router.post("/:id/devices", (req, res) => {
+router.post("/:id/devices", async (req, res) => {
   const deviceId = req.body?.device_id;
   if (!deviceId) {
     return res.status(400).json({ error: "device_id is required" });
