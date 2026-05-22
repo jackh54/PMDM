@@ -11,6 +11,14 @@ Self-hosted macOS-first MDM platform (macOS 10.13+) with NanoMDM, SCEP, Node.js 
 3. Start stack: `docker compose up -d --build`
 4. Login with `ADMIN_USERNAME` / `ADMIN_PASSWORD`.
 
+**VPS with host Nginx (ports 80/443 already in use):** do not start the compose `nginx` service — it will conflict with host Nginx and restart-loop:
+
+```bash
+docker compose up -d --build nanomdm scep backend frontend
+```
+
+**NanoMDM v0.9+** uses `-storage-dsn` (not the removed `-storage-path` flag). If NanoMDM logs `flag provided but not defined: -storage-path`, pull the latest `docker-compose.yml` and recreate the container.
+
 ## Backups
 
 - SQLite backup: `./scripts/backup-db.sh data/mdm.db backups`
@@ -43,22 +51,13 @@ On the Mac, open `https://<DOMAIN>/enrollment.mobileconfig` (or Settings → Pro
 
 ### Host Nginx (VPS without compose nginx)
 
-Proxy paths must preserve NanoMDM’s `/mdm` endpoint (do **not** strip the prefix):
+Use the full example in `nginx/host-vps.example.conf`. Critical fixes vs a broken setup:
 
-```nginx
-location /scep {
-    proxy_pass http://127.0.0.1:2016;
-}
-location /mdm {
-    proxy_pass http://127.0.0.1:9000/mdm;
-}
-location /api/ {
-    proxy_pass http://127.0.0.1:3001/api/;
-}
-location = /enrollment.mobileconfig {
-    proxy_pass http://127.0.0.1:3001/api/enrollment/mobileconfig;
-}
-```
+- `location /mdm` → `proxy_pass http://127.0.0.1:9000/mdm` (not `location /mdm/` → `9000/`, which strips the path)
+- `location /scep` → `proxy_pass http://127.0.0.1:2016` (not `2016/scep` unless your SCEP server requires it)
+- Enrollment → `http://127.0.0.1:3001/api/enrollment/mobileconfig`
+
+After `docker compose run --rm scep ca -init`, always run `docker compose restart nanomdm` before `./scripts/nanomdm-bootstrap.sh`.
 
 ## MDM control (profiles, commands, inventory)
 
